@@ -1,0 +1,16 @@
+
+fn calculate_seat_number(id : &str) -> (u32, u32, u32) {
+    let (first, last) = s.split_at(7);
+    print("f = {}; l ={}", first, last);
+    return (0,0,0);
+
+}
+
+fn main() {
+
+    assert_eq!(calculate_seat_number("BFFFBBFRRR"), (70, 7, 567));
+    assert_eq!(calculate_seat_number("FFFBBBFRRR"), (14, 7, 119));
+    assert_eq!(calculate_seat_number("BBFFBBFRLL"), (102, 4, 820));
+
+    println!("Hello, world!");
+}
