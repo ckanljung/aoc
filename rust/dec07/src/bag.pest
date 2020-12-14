@@ -1,0 +1,34 @@
+ws = _{ " " | "\t" }
+
+char = { ASCII_ALPHANUMERIC }
+
+digit = { ASCII_DIGIT }
+
+num = { digit* }
+
+word = { char+ }
+
+color = { word }
+
+adjective = { word }
+
+bagcolor = { adjective ~ ws ~ color }
+
+bagliteral = _{ "bags" | "bag" }
+
+bag = { bagcolor ~ ws ~ bagliteral }
+
+nobag = { "no" ~ ws ~ "other" ~ ws ~ bagliteral }
+
+line = { bag ~ ws ~ "contain" ~ ws ~(baglist | nobag) ~ "."}
+
+bagelem = { num ~ ws ~ bag }
+
+baglist = { bagelem  ~ ("," ~ ws ~bagelem)* }
+
+file = {
+    SOI ~
+    (line ~ NEWLINE)* ~
+    EOI
+}
+
