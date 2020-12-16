@@ -4,6 +4,27 @@ import Data.List
 import Data.List.Split
 import qualified Data.Set as Set
 
+import qualified Data.Text as T
+import Data.Text.Encoding as E
+import Data.ByteString (ByteString)
+
+data Bag = 
+  ColoredBag String String |
+  SimpleBag String |
+  EmptyBag deriving (Show)  
+
+wordsToBag :: [[Char]] -> Bag
+wordsToBag [] = EmptyBag
+wordsToBag [a] = SimpleBag a
+wordsToBag (a : b : _) = ColoredBag a b
+
+parseContent :: [T.Text] -> [T.Text]
+parseContent a = T.splitOn (T.pack ", ") $ T.strip $ head a
+
+splitLine :: [Char] -> (Bag,[T.Text])
+splitLine x = (wordsToBag $ words $ T.unpack $ head a, parseContent $ tail a) 
+  where a = T.splitOn (T.pack "contain") (T.pack x)
+
 nubOrd :: Ord a => [a] -> [a] 
 nubOrd xs = go Set.empty xs where
   go s (x:xs)
@@ -25,11 +46,6 @@ getWords path = do
 
 antersect l = foldr (\a b ->  Set.elems $ Set.fromList a `Set.intersection` Set.fromList b) (head l) l
 
-data Color = String
-
-data Bag = Color Content
-type Content = [Bag]
-
 getsUniqSum :: FilePath -> IO ([Int], Int)
 getsUniqSum path = do
   contents <- readFile path
@@ -39,3 +55,7 @@ getsUniqSum path = do
 
 testin = ["abc","","a","b","c","","ab","ac","","a","a","a","a","","b"]
 
+
+testa = "light red bags contain 1 bright white bag, 2 muted yellow bags."
+testb="faded blue bags contain no other bags."
+testc="bright white bags contain 1 shiny gold bag."
