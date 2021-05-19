@@ -13,15 +13,23 @@ data Bag =
   SimpleBag String |
   EmptyBag deriving (Show)  
 
+
+data BagCount =
+  NumberedBagCount Int Bag | 
+  EmptyBagCount
+
+wordsToBagCount :: [[Char]] -> BagCount
+wordsToBagCount a = 
+
 wordsToBag :: [[Char]] -> Bag
 wordsToBag [] = EmptyBag
 wordsToBag [a] = SimpleBag a
 wordsToBag (a : b : _) = ColoredBag a b
 
-parseContent :: [T.Text] -> [T.Text]
-parseContent a = T.splitOn (T.pack ", ") $ T.strip $ head a
+parseContent :: [T.Text] -> [[String]]
+parseContent a = map (\x -> words $ T.unpack x) $ T.splitOn (T.pack ", ") $ T.strip $ head a
 
-splitLine :: [Char] -> (Bag,[T.Text])
+splitLine :: [Char] -> (Bag,[[String]])
 splitLine x = (wordsToBag $ words $ T.unpack $ head a, parseContent $ tail a) 
   where a = T.splitOn (T.pack "contain") (T.pack x)
 
