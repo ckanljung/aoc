@@ -4,12 +4,6 @@ defmodule AOC do
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> AOC.hello()
-      :world
 
   """
 
@@ -35,17 +29,33 @@ defmodule AOC do
     end
   end
 
-  def exec_vm({processed, [], accumulator}), do: accumulator
-  def exec_vm({processed, [rest_head | rest_tail], accumulator}) do 
+  def increase_ref({op,value,ref}) do
+    {op,value,ref+1}
+  end
+
+  def exec_vm(_, [], accumulator), do: accumulator
+  def exec_vm(processed, [rest_head | rest_tail], accumulator) do 
     case rest_head do
       {_, _, 1} -> accumulator
-      { :nop, value, refcnt} -> exec_vm( [{:nop, value, refcnt+1}|processed], rest_tail, accumulator )
-      { :acc, value, refcnt} -> exec_vm( [{:nop, value, refcnt+1}|processed], rest_tail, accumulator+value )
-      { :jmp, value, refcnt} -> exec_vm( [{:nop, value, refcnt+1}|processed], rest_tail, accumulator+value )
+      { :nop, _, _} -> exec_vm( [increase_ref(rest_head)|processed], rest_tail, accumulator )
+      { :acc, value, _} -> exec_vm( [increase_ref(rest_head)|processed], rest_tail, accumulator+value )
+      { :jmp, value, _} when value >= 0 -> 
+        {rest, processed} = pop_and_pushn([increase_ref(rest_head)|rest_tail], processed, value)
+        exec_vm( [increase_ref(rest_head)|processed], rest, accumulator)
+      { :jmp, value, _} when value < 0 -> 
+        {rest, processed} = pop_and_pushn(processed, [increase_ref(rest_head)|rest_tail], value)
+        exec_vm( [increase_ref(rest_head)|processed], rest, accumulator)
     end
   end
 
   _def_file = "lib/data/08/input.txt"
+
+
+  def run08(file) do
+    istr_list = read_input(file) |> Enum.map(&parse_istr/1)
+    exec_vm([], istr_list, 0)
+  end
+
   def read_input(file) do
     _fixed_contents =
       File.stream!(file)
